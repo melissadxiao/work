@@ -2,6 +2,8 @@
 
   <head>
     <script src='covid.json'></script>
+    <!-- link to access Axios CDN-->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/3.1.4/vue.cjs.js'></script>
   </head>
 
   <body>
@@ -11,6 +13,10 @@
   </body>
 
   <script>
+    // access API data
+    axios.get('https://www.trackcorona.live/api/countries').then(response=>{
+      buildList();
+    })
 
     //list from file
     function buildList(){
