@@ -8,22 +8,25 @@
    <!--icon-->
    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
    <script src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js'></script>
-
+   <!--leaflet-->
    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+   <!--chart.js-->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 
    <style>
     .card{
-      height:500px;
+      height:600px;
     }
-  </style>
+   </style>
+
   </head>
 
   <body>
     <!--navbar-->
     <nav>
-      <div class="nav-wrapper light-green lighten-4 white-text">
-        <a href="#" class="brand-logo">Dashboard</a>
+      <div class="nav-wrapper light blue darken-4 white-text">
+        <a href="#" class="brand-logo" style="padding-left: 15">Dashboard</a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
           <li><a href="sass.html">Sass</a></li>
           <li><a href="badges.html">Components</a></li>
@@ -56,9 +59,8 @@
       <div class="col s12 m6">
         <div class="card">
           <div class="card-content">
-            <span class="card-title">Card Title</span>
-            <p>I am a very simple card. I am good at containing small bits of information.
-            I am convenient because I require little markup to use effectively.</p>
+            <span class="card-title">Bar Chart</span>
+            <canvas id="bar-chart" width="800" height="450"></canvas>
           </div>
         </div>
       </div><!--end of col-->
@@ -66,9 +68,8 @@
       <div class="col s12 m6">
         <div class="card">
           <div class="card-content">
-            <span class="card-title">Card Title</span>
-            <p>I am a very simple card. I am good at containing small bits of information.
-            I am convenient because I require little markup to use effectively.</p>
+            <span class="card-title">Pie Chart</span>
+            <canvas id="pie-chart" width="800" height="450"></canvas>
           </div>
         </div>
       </div><!--end of col-->
@@ -83,43 +84,83 @@
         console.log(response.data.data);
         buildList(response.data.data);
         mapAlgo(response.data.data);
+        barChart(response.data.data);
+        pieChart();
       })
 
-    //mapIt();
-
     function mapAlgo(response){
-      var map = L.map('map').setView([30, -10], 2);
+        var map = L.map('map').setView([30, -10], 2);
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-      for (i=0; i<response.length;i++){
-        let lat = response[i].latitude;
-        let lon = response[i].longitude;
-        var radius = parseInt(response[i].dead)*2;
-        var popup = "<h6>" + response[i].location + "</h6><p>" + response[i].dead + "</p>";
-        if (i<10){
-          var c = 'red';
-        } else if (i >= 10 && i < 150){
-          var c = 'orange';
-        } else {
-          var c = 'yellow';
+        for (i=0; i<response.length;i++){
+          let lat = response[i].latitude;
+          let lon = response[i].longitude;
+          var radius = parseInt(response[i].dead)*2;
+          var popup = "<h6>" + response[i].location + "</h6><p>" + response[i].dead + "</p>";
+          if (i<10){
+            var c = '#324f81';
+          } else if (i >= 10 && i < 150){
+            var c = '#86a0d0';
+          } else {
+            var c = '#d7e0ef';
+          }
+          L.circle([lat,lon],{color:c,radius}).addTo(map).bindPopup(popup);
         }
-        L.circle([lat,lon],{color:c,radius}).addTo(map).bindPopup(popup);
       }
+
+    function barChart(cdata){
+      // Bar chart
+
+      var labarray = [];
+      var dataarray = [];
+      for (i=0;i<10;i++){
+        labarray.push(cdata[i].location)
+        dataarray.push(cdata[i].dead)
+      }
+
+      new Chart(document.getElementById("bar-chart"), {
+          type: 'bar',
+          data: {
+            labels: labarray,
+            datasets: [
+              {
+                label: "COVID-19 deaths",
+                backgroundColor: ["#324f81", "#3b5c97","#436aad","#466eb4","#5a7fbf","#7090c7", "#86a0d0","#abbdde","#c1cfe7","#d7e0ef"],
+                data: dataarray
+              }
+            ]
+          },
+          options: {
+            legend: { display: false },
+            title: {
+              display: true,
+              text: 'Deaths from COVID-19'
+            }
+          }
+      });
     }
 
-    function mapIt(){
-      var map = L.map('map').setView([51.505, -0.09], 3);
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(map);
-
-      L.marker([51.5, -0.09]).addTo(map)
-          .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
-          .openPopup();
+    function pieChart(){
+      new Chart(document.getElementById("pie-chart"), {
+          type: 'pie',
+          data: {
+            labels: ["Africa", "Asia", "Europe", "Latin America", "North America"],
+            datasets: [{
+              label: "Population (millions)",
+              backgroundColor: ["#324f81", "#3b5c97","#436aad","#466eb4","#5a7fbf","#7090c7", "#86a0d0","#abbdde","#c1cfe7","#d7e0ef"],
+              data: [2478,5267,734,784,433]
+            }]
+          },
+          options: {
+            title: {
+              display: true,
+              text: 'Predicted world population (millions) in 2050'
+            }
+          }
+      });
     }
 
     function buildList(data){
@@ -137,5 +178,6 @@
       myHTML = myHTML + "</ul>"
       dHandle.innerHTML = myHTML;
     }
+
   </script>
 </html>
