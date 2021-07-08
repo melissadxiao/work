@@ -26,11 +26,8 @@
     <!--navbar-->
     <nav>
       <div class="nav-wrapper light blue darken-4 white-text">
-        <a href="#" class="brand-logo" style="padding-left: 15">Dashboard</a>
+        <a href="#" class="brand-logo" style="padding-left: 15">COVID-19 Dashboard</a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-          <li><a href="sass.html">Sass</a></li>
-          <li><a href="badges.html">Components</a></li>
-          <li><a href="collapsible.html">JavaScript</a></li>
         </ul>
       </div>
     </nav>
@@ -85,8 +82,23 @@
         buildList(response.data.data);
         mapAlgo(response.data.data);
         barChart(response.data.data);
-        pieChart();
+        pieChart(response.data.data);
       })
+    function buildList(data){
+        var dHandle = document.getElementById('output');
+        var myHTML = "<ul class='collection'>";
+
+        data.sort(function(a, b){
+          return b.dead - a.dead;
+        });
+
+        for (i=0; i<10;i++){
+          myHTML = myHTML + "<li class='collection-item'>" + data[i].location + "<span class='badge'>" + data[i].dead + "</li>";
+
+        }
+        myHTML = myHTML + "</ul>"
+        dHandle.innerHTML = myHTML;
+      }
 
     function mapAlgo(response){
         var map = L.map('map').setView([30, -10], 2);
@@ -143,41 +155,35 @@
       });
     }
 
-    function pieChart(){
+    function pieChart(pdata){
+      var labarrayp = [];
+      var dataarrayp = [];
+      for (i=0;i<10;i++){
+        labarrayp.push(pdata[i].location)
+        dataarrayp.push(pdata[i].confirmed)
+      }
+
       new Chart(document.getElementById("pie-chart"), {
           type: 'pie',
           data: {
-            labels: ["Africa", "Asia", "Europe", "Latin America", "North America"],
-            datasets: [{
-              label: "Population (millions)",
-              backgroundColor: ["#324f81", "#3b5c97","#436aad","#466eb4","#5a7fbf","#7090c7", "#86a0d0","#abbdde","#c1cfe7","#d7e0ef"],
-              data: [2478,5267,734,784,433]
-            }]
+            labels: labarrayp,
+            datasets: [
+              {
+                label: "Confirmed COVID-19 cases",
+                backgroundColor: ["#324f81", "#3b5c97","#436aad","#466eb4","#5a7fbf","#7090c7", "#86a0d0","#abbdde","#c1cfe7","#d7e0ef"],
+                data: dataarrayp
+            }
+          ]
           },
           options: {
             title: {
               display: true,
-              text: 'Predicted world population (millions) in 2050'
+              text: 'Confirmed COVID-19 Cases'
             }
           }
       });
     }
 
-    function buildList(data){
-      var dHandle = document.getElementById('output');
-      var myHTML = "<ul class='collection'>";
-
-      data.sort(function(a, b){
-        return b.dead - a.dead;
-      });
-
-      for (i=0; i<10;i++){
-        myHTML = myHTML + "<li class='collection-item'>" + data[i].location + "<span class='badge'>" + data[i].dead + "</li>";
-
-      }
-      myHTML = myHTML + "</ul>"
-      dHandle.innerHTML = myHTML;
-    }
 
   </script>
 </html>
