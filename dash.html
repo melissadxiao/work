@@ -18,6 +18,13 @@
     .card{
       height:600px;
     }
+    #legend {
+      float:left;
+      display:inline;
+      color:white;
+      padding:10px;
+      margin: 5px;
+    }
    </style>
 
   </head>
@@ -45,8 +52,10 @@
       <div class="col s12 m6">
         <div class="card">
           <div class="card-content">
-            <span class="card-title">Map</span>
-            <div id='map' style="width:100%; height:83%"></div>
+            <span class="card-title">COVID-19 Deaths by Country</span>
+            <div id='map' style="width:100%; height:80%"></div>
+            <span style='float:left;font-size:2em; align-items: center;'>
+              Legend</span><div id="legend" style="background-color:#324f81;">Top 10</div><div id="legend" style="background-color:#86a0d0;">10-150</div><div id="legend" style="background-color:#d7e0ef;">150+</div>
           </div>
         </div>
       </div><!--end of col-->
